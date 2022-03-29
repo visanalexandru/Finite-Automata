@@ -22,6 +22,14 @@ protected:
 
     //The start state.
     state start;
+
+    //Returns the set of states that are not final.
+    std::set<state> non_final() const;
+
+    //Returns the alphabet of the automaton.
+    std::set<letter> alphabet() const;
+
+private:
 public:
     Automaton();
 

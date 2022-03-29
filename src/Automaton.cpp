@@ -20,6 +20,27 @@ void Automaton::add_edge(state a, state b, letter s) {
     graph[a].push_back({b, s});
 }
 
+std::set<state> Automaton::non_final() const {
+    std::set<state> result;
+    for (const auto &node: graph) {
+        //If the state is not in the final set.
+        if (final.find(node.first) == final.end()) {
+            result.insert(node.first);
+        }
+    }
+    return result;
+}
+
+std::set<letter> Automaton::alphabet() const {
+    std::set<letter> result;
+    for (const auto &node: graph) {
+        for (const Edge &edge: node.second) {
+            result.insert(edge.transition);
+        }
+    }
+    return result;
+}
+
 std::ostream &operator<<(std::ostream &stream, const Automaton &automaton) {
     stream << "digraph automaton{" << std::endl;
     stream << "node [shape=circle];" << std::endl;

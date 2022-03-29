@@ -50,12 +50,7 @@ bool NFA::valid(const std::string &word) const {
 
 DFA NFA::to_dfa() const {
     //First get all the letters used in the graph.
-    std::set<letter> letters;
-    for (const auto &p: graph) {
-        for (Edge x: p.second) {
-            letters.insert(x.transition);
-        }
-    }
+    std::set<letter> letters = alphabet();
 
     //Then apply subset construction.
 
