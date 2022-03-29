@@ -72,8 +72,9 @@ DFA NFA::to_dfa() const {
     std::deque<std::set<state>> queue;
 
     //The starting set is the start point.
+    size_t num_nodes = 0;
     nodes.insert({start});
-    indices[{start}] = indices.size();
+    indices[{start}] = num_nodes++;
     queue.push_back({start});
 
     while (!queue.empty()) {
@@ -100,7 +101,7 @@ DFA NFA::to_dfa() const {
                 if (nodes.find(next_state) == nodes.end()) {
                     nodes.insert(next_state);
                     queue.push_back(next_state);
-                    indices[next_state] = indices.size();
+                    indices[next_state] = num_nodes++;
                 }
                 result.add_edge(indices[current_state], indices[next_state], x);
             }
@@ -118,6 +119,6 @@ DFA NFA::to_dfa() const {
         }
     }
 
-    result.set_initial(start);
+    result.set_initial(0);
     return result;
 }

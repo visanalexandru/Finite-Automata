@@ -172,3 +172,79 @@ TEST_CASE("NFA-Words that only contain 'a' or words of the form 'ab'*") {
     REQUIRE(dfa.valid("ababababab") == true);
     REQUIRE(dfa.valid("bababab") == false);
 }
+
+TEST_CASE("NFA-Words for which the second to last symbol is 1") {
+    NFA nfa;
+    nfa.add_edge(0, 0, '1');
+    nfa.add_edge(0, 0, '0');
+    nfa.add_edge(0, 1, '1');
+    nfa.add_edge(1, 2, '0');
+    nfa.add_edge(1, 2, '1');
+    nfa.set_final(2);
+    nfa.set_initial(0);
+    REQUIRE(nfa.valid("1010111101010") == true);
+    REQUIRE(nfa.valid("") == false);
+    REQUIRE(nfa.valid("0000001") == false);
+    REQUIRE(nfa.valid("1010101000010") == true);
+
+    //Test conversion.
+    DFA dfa = nfa.to_dfa();
+    REQUIRE(dfa.valid("1010111101010") == true);
+    REQUIRE(dfa.valid("") == false);
+    REQUIRE(dfa.valid("0000001") == false);
+    REQUIRE(dfa.valid("1010101000010") == true);
+}
+
+TEST_CASE("NFA-Words that are concatenations of 10 and 101") {
+    NFA nfa;
+    nfa.add_edge(3, 2, '1');
+    nfa.add_edge(2, 3, '0');
+    nfa.add_edge(2, 1, '0');
+    nfa.add_edge(1, 3, '1');
+    nfa.set_initial(3);
+    nfa.set_final(3);
+    REQUIRE(nfa.valid("") == true);
+    REQUIRE(nfa.valid("100110101010111") == false);
+    REQUIRE(nfa.valid("1010110") == true);
+    REQUIRE(nfa.valid("1010101010") == true);
+    REQUIRE(nfa.valid("10110101101010") == true);
+    REQUIRE(nfa.valid("1010010101101010") == false);
+
+    //Test conversion.
+    DFA dfa = nfa.to_dfa();
+
+    REQUIRE(nfa.valid("") == true);
+    REQUIRE(nfa.valid("100110101010111") == false);
+    REQUIRE(nfa.valid("1010110") == true);
+    REQUIRE(nfa.valid("1010101010") == true);
+    REQUIRE(nfa.valid("10110101101010") == true);
+    REQUIRE(nfa.valid("1010010101101010") == false);
+}
+
+TEST_CASE("NFA-Words that have a 1 two characters from the end of the string") {
+    NFA nfa;
+    nfa.add_edge(0, 0, '0');
+    nfa.add_edge(0, 0, '1');
+    nfa.add_edge(0, 1, '1');
+    nfa.add_edge(1, 2, '0');
+    nfa.add_edge(1, 2, '1');
+    nfa.add_edge(2, 3, '0');
+    nfa.add_edge(2, 3, '1');
+    nfa.set_initial(0);
+    nfa.set_final(3);
+
+    REQUIRE(nfa.valid("") == false);
+    REQUIRE(nfa.valid("101011101010") == false);
+    REQUIRE(nfa.valid("101111010110") == true);
+    REQUIRE(nfa.valid("100") == true);
+    REQUIRE(nfa.valid("00010101000") == false);
+
+    //Test conversion.
+    DFA dfa = nfa.to_dfa();
+    std::cout << dfa;
+    REQUIRE(dfa.valid("") == false);
+    REQUIRE(dfa.valid("101011101010") == false);
+    REQUIRE(dfa.valid("101111010110") == true);
+    REQUIRE(dfa.valid("100") == true);
+    REQUIRE(dfa.valid("00010101000") == false);
+}
