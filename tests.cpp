@@ -26,6 +26,15 @@ TEST_CASE("DFA-Words that start with 0 and end in 1") {
     REQUIRE(dfa.valid("00") == false);
     REQUIRE(dfa.valid("001") == true);
     REQUIRE(dfa.valid("01000000") == false);
+
+    //Test valid minimization.
+    DFA minimized = dfa.minimize();
+    REQUIRE(minimized.valid("0000101010101111") == true);
+    REQUIRE(minimized.valid("10111010101") == false);
+    REQUIRE(minimized.valid("00") == false);
+    REQUIRE(minimized.valid("001") == true);
+    REQUIRE(minimized.valid("01000000") == false);
+
 }
 
 TEST_CASE("DFA-Words with the first and last letter equal") {
@@ -43,6 +52,7 @@ TEST_CASE("DFA-Words with the first and last letter equal") {
     dfa.set_final(1);
     dfa.set_final(3);
     dfa.set_initial(0);
+
     REQUIRE(dfa.valid("abababaaaabab") == false);
     REQUIRE(dfa.valid("a") == true);
     REQUIRE(dfa.valid("b") == true);
@@ -50,6 +60,14 @@ TEST_CASE("DFA-Words with the first and last letter equal") {
     REQUIRE(dfa.valid("babaaababa") == false);
     REQUIRE(dfa.valid("bbabab") == true);
 
+    //Test valid minimization.
+    DFA minimized = dfa.minimize();
+    REQUIRE(minimized.valid("abababaaaabab") == false);
+    REQUIRE(minimized.valid("a") == true);
+    REQUIRE(minimized.valid("b") == true);
+    REQUIRE(minimized.valid("ababababaaaabba") == true);
+    REQUIRE(minimized.valid("babaaababa") == false);
+    REQUIRE(minimized.valid("bbabab") == true);
 
 }
 
@@ -68,6 +86,13 @@ TEST_CASE("DFA-Words that start with three consecutive 0's.") {
     REQUIRE(dfa.valid("0010001010010") == false);
     REQUIRE(dfa.valid("010100101010") == false);
     REQUIRE(dfa.valid("11111111111111111000") == true);
+
+    DFA minimized = dfa.minimize();
+    REQUIRE(minimized.valid("") == false);
+    REQUIRE(minimized.valid("110001111") == true);
+    REQUIRE(minimized.valid("0010001010010") == false);
+    REQUIRE(minimized.valid("010100101010") == false);
+    REQUIRE(minimized.valid("11111111111111111000") == true);
 }
 
 TEST_CASE("DFA-Words with even numbers of 0 and 1.") {
@@ -88,6 +113,14 @@ TEST_CASE("DFA-Words with even numbers of 0 and 1.") {
     REQUIRE(dfa.valid("11") == true);
     REQUIRE(dfa.valid("0001010001") == false);
     REQUIRE(dfa.valid("") == true);
+
+    DFA minimized = dfa.minimize();
+    REQUIRE(minimized.valid("10101000010101101010") == false);
+    REQUIRE(minimized.valid("11010101010000") == true);
+    REQUIRE(minimized.valid("0000") == true);
+    REQUIRE(minimized.valid("11") == true);
+    REQUIRE(minimized.valid("0001010001") == false);
+    REQUIRE(minimized.valid("") == true);
 }
 
 TEST_CASE("NFA-Words that contain 00 or 11 as a substring") {
@@ -120,6 +153,13 @@ TEST_CASE("NFA-Words that contain 00 or 11 as a substring") {
     REQUIRE(dfa.valid("10") == false);
     REQUIRE(dfa.valid("10101101010") == true);
 
+    DFA minimized = dfa.minimize();
+    REQUIRE(minimized.valid("0101010101") == false);
+    REQUIRE(minimized.valid("01011") == true);
+    REQUIRE(minimized.valid("01") == false);
+    REQUIRE(minimized.valid("00") == true);
+    REQUIRE(minimized.valid("10") == false);
+    REQUIRE(minimized.valid("10101101010") == true);
 }
 
 TEST_CASE("NFA-Words that end with 101") {

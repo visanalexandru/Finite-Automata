@@ -15,6 +15,9 @@ public:
 
     //Checks if the word is accepted by the automaton.
     bool valid(const std::string &word) const override;
+
+    // Returns a minimized version of the automaton.
+    DFA minimize() const;
 };
 
 
