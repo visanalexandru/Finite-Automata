@@ -4,14 +4,6 @@
 
 #include "DFA.h"
 
-DFA::DFA() : graph(), final(), start(0) {
-
-}
-
-void DFA::set_initial(state x) {
-    start = x;
-}
-
 void DFA::add_edge(state a, state b, letter s) {
     //If there is already an edge between the two states, overwrite the transition letter.
     for (Edge &edge: graph[a]) {
@@ -23,11 +15,6 @@ void DFA::add_edge(state a, state b, letter s) {
     //If no edge between the two states exist, just add it.
     graph[a].push_back({b, s});
 }
-
-void DFA::set_final(state x) {
-    final.insert(x);
-}
-
 
 bool DFA::valid(const std::string &word) const {
     state current = start;

@@ -5,22 +5,6 @@
 #include "NFA.h"
 #include<iostream>
 
-NFA::NFA() : graph(), final(), start(0) {
-
-}
-
-void NFA::set_initial(state x) {
-    start = x;
-}
-
-void NFA::add_edge(state a, state b, letter s) {
-    graph[a].push_back({b, s});
-}
-
-void NFA::set_final(state x) {
-    final.insert(x);
-}
-
 bool NFA::valid(const std::string &word) const {
     // The set of current states.
     std::set<state> states = {start};
