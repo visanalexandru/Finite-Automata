@@ -8,6 +8,7 @@
 #include<map>
 #include<set>
 #include<vector>
+#include<ostream>
 #include"Util.h"
 
 //This class is the base class for all the automatons.
@@ -35,6 +36,9 @@ public:
 
     //Checks if the word is accepted by the automaton.
     virtual bool valid(const std::string &word) const = 0;
+
+    //Outputs the automaton to the given stream.
+    friend std::ostream &operator<<(std::ostream &stream, const Automaton &automaton);
 };
 
 
