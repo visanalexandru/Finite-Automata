@@ -28,6 +28,31 @@ TEST_CASE("DFA-Words that start with 0 and end in 1") {
     REQUIRE(dfa.valid("01000000") == false);
 }
 
+TEST_CASE("DFA-Words with the first and last letter equal") {
+    DFA dfa;
+    dfa.add_edge(0, 1, 'a');
+    dfa.add_edge(1, 1, 'a');
+    dfa.add_edge(1, 2, 'b');
+    dfa.add_edge(2, 1, 'a');
+    dfa.add_edge(2, 2, 'b');
+    dfa.add_edge(0, 3, 'b');
+    dfa.add_edge(3, 3, 'b');
+    dfa.add_edge(3, 4, 'a');
+    dfa.add_edge(4, 3, 'b');
+    dfa.add_edge(4, 4, 'a');
+    dfa.set_final(1);
+    dfa.set_final(3);
+    dfa.set_initial(0);
+    REQUIRE(dfa.valid("abababaaaabab") == false);
+    REQUIRE(dfa.valid("a") == true);
+    REQUIRE(dfa.valid("b") == true);
+    REQUIRE(dfa.valid("ababababaaaabba") == true);
+    REQUIRE(dfa.valid("babaaababa") == false);
+    REQUIRE(dfa.valid("bbabab") == true);
+
+
+}
+
 TEST_CASE("DFA-Words that start with three consecutive 0's.") {
     DFA dfa;
     dfa.add_edge(0, 0, '1');
@@ -38,6 +63,7 @@ TEST_CASE("DFA-Words that start with three consecutive 0's.") {
     dfa.add_edge(3, 3, '1');
     dfa.set_final(3);
     dfa.set_initial(0);
+    REQUIRE(dfa.valid("") == false);
     REQUIRE(dfa.valid("110001111") == true);
     REQUIRE(dfa.valid("0010001010010") == false);
     REQUIRE(dfa.valid("010100101010") == false);
@@ -61,6 +87,7 @@ TEST_CASE("DFA-Words with even numbers of 0 and 1.") {
     REQUIRE(dfa.valid("0000") == true);
     REQUIRE(dfa.valid("11") == true);
     REQUIRE(dfa.valid("0001010001") == false);
+    REQUIRE(dfa.valid("") == true);
 }
 
 TEST_CASE("NFA-Words that contain 00 or 11 as a substring") {
