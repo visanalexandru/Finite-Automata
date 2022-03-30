@@ -15,6 +15,65 @@ void DFA::add_edge(state a, state b, letter s) {
     }
     //If the check did not return, just add the edge.
     graph[a].push_back({b, s});
+    transposed[b].push_back(a);
+}
+
+std::set<state> DFA::alive_states() const {
+    std::deque<state> current;
+    std::set<state> reachable;
+
+    //Run a multiple-root bfs to find the states that are reachable from any final state.
+    for (state x: final) {
+        current.push_back(x);
+        reachable.insert(x);
+    }
+
+    while (!current.empty()) {
+        state here = current.front();
+        current.pop_front();
+
+        if (transposed.find(here) == transposed.end()) {
+            continue;
+        }
+
+        const auto &vec = transposed.find(here)->second;
+        for (state next: vec) {
+            if (reachable.find(next) == reachable.end()) {
+                reachable.insert(next);
+                current.push_back(next);
+            }
+        }
+    }
+    return reachable;
+}
+
+std::set<state> DFA::reachable_states() const {
+    std::deque<state> current = {start};
+    std::set<state> reachable = {start};
+
+    //Run a single-root bfs to find the states that are reachable from the start state.
+    while (!current.empty()) {
+        state here = current.front();
+        current.pop_front();
+
+        if (graph.find(here) == graph.end()) {
+            continue;
+        }
+
+        const auto &vec = graph.find(here)->second;
+        for (const Edge &edge: vec) {
+            if (reachable.find(edge.next) == reachable.end()) {
+                reachable.insert(edge.next);
+                current.push_back(edge.next);
+            }
+        }
+    }
+
+    return reachable;
+}
+
+std::set<state> DFA::valid_states() const {
+    return intersection(alive_states(), reachable_states());
 }
 
 bool DFA::valid(const std::string &word) const {
@@ -53,10 +112,12 @@ bool DFA::valid(const std::string &word) const {
 
 
 DFA DFA::minimize() const {
+    std::set<state> valid = valid_states();
+
     //Implementation of hopcroft's algorithm
     std::set<std::set<state>> w;
-    w.insert(final);
-    w.insert(non_final());
+    w.insert(intersection(final, valid));
+    w.insert(intersection(non_final(), valid));
     std::set<std::set<state>> p = w;
 
     std::set<letter> letters = alphabet();
@@ -72,6 +133,11 @@ DFA DFA::minimize() const {
             //let X be the set of states for which a transition on c leads to a state in A
             std::set<state> x;
             for (const auto &node: graph) {
+
+                //Only consider nodes that are valid.
+                if (valid.find(node.first) == valid.end())
+                    continue;
+
                 for (const Edge &edge: node.second) {
                     if (edge.transition == c && a.find(edge.next) != a.end()) {
                         x.insert(node.first);
@@ -142,6 +208,9 @@ DFA DFA::minimize() const {
             const auto &vec = graph.find(x)->second;
             //For each edge from this state, add edges to the partition containing the neighbouring state.
             for (const Edge &edge: vec) {
+                //Only consider states that are valid.
+                if (valid.find(edge.next) == valid.end())
+                    continue;
                 result.add_edge(partition_index, partitions[edge.next], edge.transition);
             }
         }

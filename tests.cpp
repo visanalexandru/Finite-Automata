@@ -185,6 +185,13 @@ TEST_CASE("NFA-Words that end with 101") {
     REQUIRE(dfa.valid("01011101") == true);
     REQUIRE(dfa.valid("00000111101") == true);
     REQUIRE(dfa.valid("22101") == false);
+
+    DFA minimized = dfa.minimize();
+    REQUIRE(minimized.valid("101011101010") == false);
+    REQUIRE(minimized.valid("111111") == false);
+    REQUIRE(minimized.valid("01011101") == true);
+    REQUIRE(minimized.valid("00000111101") == true);
+    REQUIRE(minimized.valid("22101") == false);
 }
 
 TEST_CASE("NFA-Words that only contain 'a' or words of the form 'ab'*") {
@@ -211,6 +218,15 @@ TEST_CASE("NFA-Words that only contain 'a' or words of the form 'ab'*") {
     REQUIRE(dfa.valid("a") == true);
     REQUIRE(dfa.valid("ababababab") == true);
     REQUIRE(dfa.valid("bababab") == false);
+
+    DFA minimized = dfa.minimize();
+    REQUIRE(minimized.valid("ababbab") == false);
+    REQUIRE(minimized.valid("aaaaaa") == true);
+    REQUIRE(minimized.valid("a") == true);
+    REQUIRE(minimized.valid("ababababab") == true);
+    REQUIRE(minimized.valid("bababab") == false);
+    REQUIRE(minimized.valid("bbbababa") == false);
+    REQUIRE(minimized.valid("") == true);
 }
 
 TEST_CASE("NFA-Words for which the second to last symbol is 1") {
@@ -281,7 +297,6 @@ TEST_CASE("NFA-Words that have a 1 two characters from the end of the string") {
 
     //Test conversion.
     DFA dfa = nfa.to_dfa();
-    std::cout << dfa;
     REQUIRE(dfa.valid("") == false);
     REQUIRE(dfa.valid("101011101010") == false);
     REQUIRE(dfa.valid("101111010110") == true);
